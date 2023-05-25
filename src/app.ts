@@ -1,25 +1,18 @@
-import express from "express";
-import config from "config";
-import connect from "./utils/connect";
-import logger from "./utils/logger";
-import routes from "./routes";
-import deserializeUser from "./middleware/deserializeUser";
-import errorHandler from "./middleware/errorHandler";
+import express from 'express';
+import routes from './routes';
+import deserializeUser from './middleware/deserializeUser';
+import errorHandler from './middleware/errorHandler';
 
-const port = config.get<string>("port");
+export default function makeApp() {
+  const app = express();
 
-const app = express();
+  app.use(express.json());
 
-app.use(express.json());
+  app.use(deserializeUser);
 
-app.use(deserializeUser);
+  app.use('/', routes);
 
-// app.use(errorHandler);
+  // app.use(errorHandler);
 
-app.listen(port, async () => {
-  logger.info(`App is running at http://localhost${port}`);
-
-  await connect();
-
-  routes(app);
-});
+  return app;
+}
